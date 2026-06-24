@@ -3,7 +3,7 @@ const router = express.Router();
 
 const {
   properties,
-} = require("../../client/src/data/properties");
+} = require("../data/properties");
 
 router.post("/", (req, res) => {
   const message =
