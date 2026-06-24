@@ -1,18 +1,19 @@
 const express = require("express");
 const router = express.Router();
 
-const {
-  properties,
-} = require("../data/properties");
+// ✅ FIXED IMPORT (IMPORTANT)
+const properties = require("../data/properties");
 
 router.post("/", (req, res) => {
-  const message =
-    req.body?.messages?.at(-1)?.text
-      ?.toLowerCase()
-      ?.trim() || "";
-
   try {
-    // Contact
+    const message =
+      req.body?.messages?.at(-1)?.text
+        ?.toLowerCase()
+        ?.trim() || "";
+
+    // ----------------------------
+    // CONTACT
+    // ----------------------------
     if (
       message.includes("detail") ||
       message.includes("contact")
@@ -24,51 +25,40 @@ Email: info@vpproperty.com`,
       });
     }
 
+    // ----------------------------
+    // START WITH ALL PROPERTIES
+    // ----------------------------
     let results = [...properties];
 
-    // BHK
-    if (
-      message.includes("1 bhk") ||
-      message.includes("1bhk")
-    ) {
-      results = results.filter(
-        (p) => p.bhk === "1"
-      );
+    // ----------------------------
+    // BHK FILTER
+    // ----------------------------
+    if (message.includes("1 bhk") || message.includes("1bhk")) {
+      results = results.filter((p) => p.bhk === "1");
     }
 
-    if (
-      message.includes("2 bhk") ||
-      message.includes("2bhk")
-    ) {
-      results = results.filter(
-        (p) => p.bhk === "2"
-      );
+    if (message.includes("2 bhk") || message.includes("2bhk")) {
+      results = results.filter((p) => p.bhk === "2");
     }
 
-    if (
-      message.includes("3 bhk") ||
-      message.includes("3bhk")
-    ) {
-      results = results.filter(
-        (p) => p.bhk === "3"
-      );
+    if (message.includes("3 bhk") || message.includes("3bhk")) {
+      results = results.filter((p) => p.bhk === "3");
     }
 
-    // Rent
+    // ----------------------------
+    // TYPE FILTER (RENT / SALE)
+    // ----------------------------
     if (message.includes("rent")) {
-      results = results.filter(
-        (p) => p.type === "rent"
-      );
+      results = results.filter((p) => p.type === "rent");
     }
 
-    // Sale
     if (message.includes("sale")) {
-      results = results.filter(
-        (p) => p.type === "sale"
-      );
+      results = results.filter((p) => p.type === "sale");
     }
 
-    // Location
+    // ----------------------------
+    // LOCATION FILTER
+    // ----------------------------
     const locations = [
       "kandivali east",
       "kandivali west",
@@ -76,20 +66,20 @@ Email: info@vpproperty.com`,
       "malad",
     ];
 
-    const selected =
-      locations.find((loc) =>
-        message.includes(loc)
-      );
+    const selectedLocation = locations.find((loc) =>
+      message.includes(loc)
+    );
 
-    if (selected) {
+    if (selectedLocation) {
       results = results.filter(
         (p) =>
-          p.location.toLowerCase() ===
-          selected
+          p.location.toLowerCase() === selectedLocation
       );
     }
 
-    // Welcome
+    // ----------------------------
+    // GREETING
+    // ----------------------------
     if (
       message.includes("hi") ||
       message.includes("hello")
@@ -100,18 +90,19 @@ Email: info@vpproperty.com`,
 Try:
 🏠 1 BHK Rent
 🏠 2 BHK Sale
-🏠 3 BHK Rent Borivali
+🏠 3 BHK Borivali
 
-Type "details" for dealer contact`,
+Type "details" for contact info`,
       });
     }
 
-    // Show results
-    if (results.length) {
+    // ----------------------------
+    // RESULTS
+    // ----------------------------
+    if (results.length > 0) {
       const reply = results
         .map(
-          (p) =>
-            `🏠 ${p.title}
+          (p) => `🏠 ${p.title}
 📍 ${p.location}
 🛏️ ${p.bhk} BHK
 🏷️ ${p.type.toUpperCase()}
@@ -120,20 +111,21 @@ Type "details" for dealer contact`,
         .join("\n\n");
 
       return res.json({
-        text:
-          reply +
-          `\n\nType "details"`,
+        text: reply + `\n\nType "details" for contact`,
       });
     }
 
+    // ----------------------------
+    // NO RESULTS
+    // ----------------------------
     return res.json({
-      text:
-        "❌ No properties found",
+      text: "❌ No properties found. Try different filters.",
     });
-  } catch (error) {
-    console.log(error);
 
-    res.status(500).json({
+  } catch (error) {
+    console.log("ChatRoute Error:", error);
+
+    return res.status(500).json({
       text: "Server Error",
     });
   }
