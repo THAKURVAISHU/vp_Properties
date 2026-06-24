@@ -121,5 +121,5 @@ const properties = [
   }
 ];
 
-// ✅ IMPORTANT: CommonJS export for backend
+
 module.exports = properties;
