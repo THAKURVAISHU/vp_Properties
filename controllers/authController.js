@@ -5,8 +5,14 @@ exports.login = (req, res) => {
     email === process.env.ADMIN_EMAIL &&
     password === process.env.ADMIN_PASSWORD
   ) {
-    return res.json({ success: true, message: "Login successful" });
+    return res.json({
+      success: true,
+      message: "Login successful",
+    });
   }
 
-  res.status(401).json({ success: false, message: "Invalid credentials" });
+  return res.status(401).json({
+    success: false,
+    message: "Invalid credentials",
+  });
 };
