@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-// ✅ FIXED IMPORT (IMPORTANT)
-const properties = require("../data/properties");
+
+const properties = require("./properties");
 
 router.post("/", (req, res) => {
   try {
